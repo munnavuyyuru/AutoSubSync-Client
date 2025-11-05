@@ -38,11 +38,11 @@ export default function ProcessVideo() {
     if (!token) navigate("/auth");
   }, [navigate]);
 
-  // ✅ UPDATED: Helper to add numeric IDs to segments (required for editing in SubtitlePreview)
+  // Helper to add numeric IDs to segments
   const addIdsToSegments = (segments) => {
     return segments.map((seg, index) => ({
       ...seg,
-      id: index + 1, // Assign 1-based ID for stable React keys and editing
+      id: index + 1,
     }));
   };
 
@@ -79,7 +79,7 @@ export default function ProcessVideo() {
       setStep("processing");
       setProgress(10);
 
-      // === STEP 1: Upload video ===
+      //Upload video
       const formData = new FormData();
       formData.append("video", videoFile);
 
@@ -98,7 +98,7 @@ export default function ProcessVideo() {
       if (!audioFile) throw new Error("No audio file returned from upload");
       setProgress(30);
 
-      // === STEP 2: Transcribe ===
+      //Transcribe
       const transcribeRes = await fetch(
         "http://localhost:5000/api/job/transcribe",
         {
@@ -125,7 +125,7 @@ export default function ProcessVideo() {
       const { segments } = await transcribeRes.json();
       setProgress(60);
 
-      // === STEP 3: Translate ===
+      //Translate
       const translateRes = await fetch(
         "http://localhost:5000/api/job/translate",
         {
@@ -152,7 +152,7 @@ export default function ProcessVideo() {
       const { segments: translatedSegments } = await translateRes.json();
       setProgress(100);
 
-      // ✅ UPDATED: Assign IDs to segments so SubtitlePreview can edit them
+      // Add ids for segments to edit them in SubtitlePreview
       setSubtitles(addIdsToSegments(translatedSegments));
 
       setStep("preview");
@@ -164,7 +164,29 @@ export default function ProcessVideo() {
     }
   };
 
+  const getLanguageName = (code) => {
+    const lang = languages.find((lang) => lang.code === code);
+    return lang ? lang.name : code;
+  };
+
   const downloadSubtitles = (format) => {
+    const getBaseFileName = (filename) => {
+      return filename.replace(/\.[^/.]+$/, "");
+    };
+    const baseName = getBaseFileName(videoFile.name);
+
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}_${String(
+      now.getHours()
+    ).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(
+      now.getSeconds()
+    ).padStart(2, "0")}`;
+
+    const langName = getLanguageName(targetLanguage);
+    const fileName = `${baseName}_${timestamp}_subtitles_${langName}.${format}`;
+
     let content = "";
 
     if (format === "srt") {
@@ -191,15 +213,14 @@ export default function ProcessVideo() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `subtitles.${format}`;
+    a.download = fileName;
     a.click();
     URL.revokeObjectURL(url);
     toast.success(`Subtitles downloaded as ${format.toUpperCase()}`);
   };
 
-  // ✅ FIXED: Now correctly handles time in SECONDS (from backend)
   const formatTime = (seconds) => {
-    const ms = seconds * 1000; // Convert seconds → milliseconds for display
+    const ms = seconds * 1000;
     const totalSeconds = Math.floor(ms / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -212,9 +233,8 @@ export default function ProcessVideo() {
       .padStart(3, "0")}`;
   };
 
-  // ✅ FIXED: Now correctly handles time in SECONDS (from backend)
   const formatTimeVTT = (seconds) => {
-    const ms = seconds * 1000; // Convert seconds → milliseconds for display
+    const ms = seconds * 1000;
     const totalSeconds = Math.floor(ms / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -241,7 +261,6 @@ export default function ProcessVideo() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Dashboard
             </Button>
-            {/* ✅ FIXED: Removed undefined `type`; hardcoded title */}
             <h1 className="text-xl font-bold text-gray-900">Upload Video</h1>
           </div>
         </div>

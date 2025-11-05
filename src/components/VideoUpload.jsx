@@ -44,7 +44,7 @@ const VideoUpload = ({ onFileSelect, selectedFile }) => {
     }
 
     // Validate file size (5000MB limit)
-    const maxSize = 500 * 1024 * 1024 * 1024; // 5000MB in bytes
+    const maxSize = 500 * 1024 * 1024 * 1024;
     if (file.size > maxSize) {
       toast.error("File size must be less than 5GB");
       return;
@@ -52,6 +52,10 @@ const VideoUpload = ({ onFileSelect, selectedFile }) => {
 
     onFileSelect(file);
     toast.success("Video file selected successfully!");
+  };
+
+  const getFileName = (file) => {
+    return file.replace(/\.[^/.]+$/, "");
   };
 
   const removeFile = () => {
@@ -93,7 +97,7 @@ const VideoUpload = ({ onFileSelect, selectedFile }) => {
               or click to browse files
             </p>
             <p className="text-xs text-gray-500">
-              Supports MP4, AVI, MOV, WMV, FLV, WebM (Max: 500MB)
+              Supports MP4, AVI, MOV, WMV, FLV, WebM (Max: 5000MB)
             </p>
           </CardContent>
         </Card>

@@ -13,7 +13,7 @@ export default function SubtitlePreview({ subtitles, onSubtitlesChange }) {
   const [editStart, setEditStart] = useState("");
   const [editEnd, setEditEnd] = useState("");
 
-  // ✅ FIXED: Accepts seconds (from backend), formats as HH:MM:SS
+  //formats as HH:MM:SS
   const formatTime = (seconds) => {
     const totalSeconds = Math.floor(seconds);
     const hours = Math.floor(totalSeconds / 3600);
@@ -24,29 +24,29 @@ export default function SubtitlePreview({ subtitles, onSubtitlesChange }) {
       .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // ✅ FIXED: Parses HH:MM:SS and returns SECONDS (to match backend format)
+  //Parses HH:MM:SS and returns SECONDS
   const parseTime = (timeStr) => {
     const trimmed = timeStr.trim();
-    const parts = trimmed.split(":").map(part => part.padStart(2, "0"));
+    const parts = trimmed.split(":").map((part) => part.padStart(2, "0"));
     if (parts.length !== 3) return 0;
 
     const [hours, minutes, seconds] = parts.map(Number);
     if (isNaN(hours) || isNaN(minutes) || isNaN(seconds)) return 0;
 
-    return hours * 3600 + minutes * 60 + seconds; // 👈 returns SECONDS
+    return hours * 3600 + minutes * 60 + seconds;
   };
 
   const startEdit = (subtitle) => {
     setEditingId(subtitle.id);
     setEditText(subtitle.text);
-    setEditStart(formatTime(subtitle.start)); // seconds → HH:MM:SS
+    setEditStart(formatTime(subtitle.start));
     setEditEnd(formatTime(subtitle.end));
   };
 
   const saveEdit = () => {
     if (!editingId) return;
 
-    const startSec = parseTime(editStart); // HH:MM:SS → seconds
+    const startSec = parseTime(editStart);
     const endSec = parseTime(editEnd);
 
     if (startSec >= endSec) {

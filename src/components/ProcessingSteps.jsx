@@ -4,28 +4,28 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, Loader2 } from "lucide-react";
 
 export default function ProcessingSteps({ progress }) {
-  // ✅ REAL steps matching your backend flow
+  //steps matching your backend flow
   const steps = [
     {
       name: "Uploading Video",
       description: "Uploading your video file to the server",
-      threshold: 30, // matches setProgress(30) after upload
+      threshold: 30,
     },
     {
       name: "Transcribing Speech",
       description: "Converting audio to text using AI",
-      threshold: 60, // matches setProgress(60) after transcription
+      threshold: 60,
     },
     {
       name: "Translating Subtitles",
       description: "Translating text to your target language",
-      threshold: 100, // matches setProgress(100) after translation
+      threshold: 100,
     },
   ];
 
   const getStepStatus = (threshold) => {
     if (progress >= threshold) return "completed";
-    // Active if progress is beyond previous step and not yet at this threshold
+    // Active if progress is beyond previous step
     const prevThreshold =
       steps.find((s) => s.threshold < threshold)?.threshold || 0;
     if (progress > prevThreshold) return "active";

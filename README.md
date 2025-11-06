@@ -2,6 +2,7 @@
 
 AI-powered multilingual subtitle generation web app. Upload a video, auto-transcribe speech, translate into a target language, review/edit, and download subtitles as SRT or WebVTT.
 
+## Backend url : [click here](https://github.com/munnavuyyuru/AutoSubSync-server)
 ### 🧭 Demo Flow
 
 - Authenticate (login/signup)
